@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测测你和哪位帝王最像</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Songti SC", "SimSun", serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            min-height: 100vh;
+            color: #e8d5b7;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Welcome Page */
+        .welcome-page {
+            text-align: center;
+            animation: fadeIn 1s ease;
+        }
+
+        .welcome-page h1 {
+            font-size: 2.5rem;
+            color: #d4af37;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .welcome-page .subtitle {
+            font-size: 1.2rem;
+            color: #b8a88a;
+            margin-bottom: 40px;
+        }
+
+        .welcome-page .description {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+
+        .welcome-page .description p {
+            margin-bottom: 15px;
+            color: #c9b896;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+            color: #1a1a2e;
+            border: none;
+            padding: 18px 60px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 30px rgba(212, 175, 55, 0.6);
+        }
+
+        /* Question Page */
+        .question-page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #b8a88a;
+            font-size: 0.95rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #f4d03f);
+            transition: width 0.4s ease;
+            border-radius: 4px;
+        }
+
+        .question-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 16px;
+            padding: 40px 30px;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            color: #d4af37;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            color: #f0e6d3;
+            margin-bottom: 35px;
+            line-height: 1.8;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 12px;
+            padding: 18px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: rgba(212, 175, 55, 0.4);
+            transform: translateX(5px);
+        }
+
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            color: #d4af37;
+            flex-shrink: 0;
+        }
+
+        .option-text {
+            color: #c9b896;
+            font-size: 1.05rem;
+        }
+
+        /* Result Page */
+        .result-page {
+            display: none;
+            animation: fadeIn 1s ease;
+            text-align: center;
+        }
+
+        .result-title {
+            color: #b8a88a;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .result-emperor {
+            font-size: 3rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .result-match {
+            font-size: 1.3rem;
+            color: #f4d03f;
+            margin-bottom: 40px;
+        }
+
+        .result-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .result-section {
+            margin-bottom: 25px;
+        }
+
+        .result-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-section h3 {
+            color: #d4af37;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .result-section h3::before {
+            content: "";
+            width: 4px;
+            height: 20px;
+            background: #d4af37;
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+
+        .result-section ul {
+            list-style: none;
+            padding-left: 14px;
+        }
+
+        .result-section li {
+            color: #c9b896;
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .result-section li::before {
+            content: "◆";
+            position: absolute;
+            left: 0;
+            color: #d4af37;
+            font-size: 0.7rem;
+        }
+
+        .result-section p {
+            color: #c9b896;
+            line-height: 1.8;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .retry-btn {
+            background: transparent;
+            color: #d4af37;
+            border: 2px solid #d4af37;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            background: rgba(212, 175, 55, 0.15);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .welcome-page h1 { font-size: 1.8rem; }
+            .question-text { font-size: 1.2rem; }
+            .result-emperor { font-size: 2.2rem; }
+            .question-card { padding: 25px 20px; }
+            .option { padding: 15px 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Page -->
+        <div class="welcome-page" id="welcomePage">
+            <h1>测测你和哪位帝王最像</h1>
+            <p class="subtitle">中华上下五千年，谁与你性格相投？</p>
+            <div class="description">
+                <p>中华历史长河中，涌现出无数杰出的帝王。他们性格各异，才能不同，在漫长的历史中留下了浓墨重彩的一笔。</p>
+                <p>本测试将通过30道选择题，从领导风格、处事哲学、情感处理等多个维度，分析你的性格特点，找出与你最相似的历史帝王。</p>
+                <p>准备好了吗？让我们开始探索你的帝王灵魂！</p>
+            </div>
+            <button class="start-btn" onclick="startTest()">开始测试</button>
+        </div>
+
+        <!-- Question Page -->
+        <div class="question-page" id="questionPage">
+            <div class="progress-container">
+                <div class="progress-text">
+                    <span>第 <span id="currentQ">1</span> 题</span>
+                    <span id="progressPercent">3%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 3.33%"></div>
+                </div>
+            </div>
+            <div class="question-card">
+                <div class="question-number" id="questionNumber">第 1 / 30 题</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="options"></div>
+            </div>
+        </div>
+
+        <!-- Result Page -->
+        <div class="result-page" id="resultPage">
+            <div class="result-title">你与哪位帝王最为相似</div>
+            <div class="result-emperor" id="emperorName"></div>
+            <div class="result-match" id="matchPercent"></div>
+            <div class="result-card">
+                <div class="result-section">
+                    <h3>性格特点</h3>
+                    <ul id="traits"></ul>
+                </div>
+                <div class="result-section">
+                    <h3>为何相似</h3>
+                    <p id="reason"></p>
+                </div>
+                <div class="result-section">
+                    <h3>领导风格</h3>
+                    <p id="leadership"></p>
+                </div>
+                <div class="result-section">
+                    <h3>人生启示</h3>
+                    <p id="lesson"></p>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="retry-btn" onclick="restartTest()">重新测试</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Emperor data
+        const emperors = {
+            qinshihuang: {
+                name: "秦始皇",
+                trait: "开创先河·专制集权",
+                traits: [
+                    "具有强烈的开拓精神和改革魄力",
+                    "追求秩序与控制，倾向于中央集权",
+                    "不畏人言，敢于承担历史责任",
+                    "对目标执着，愿意付出一切代价",
+                    "具有超前的战略眼光"
+                ],
+                reason: "你展现出了强烈的统治欲望和开创精神。你欣赏强有力的领导风格，不惧怕做决策，敢于为长远目标牺牲眼前利益。你的思维方式倾向于系统性构建，偏好建立一套持久的规则和秩序。这与秦始皇统一六国、建立郡县制、统一文字货币的开拓精神高度吻合。",
+                leadership: "你是一位天生的领导者，倾向于掌握全局。你不喜欢被束缚，热衷于建立自己的规则和体系。在团队中，你往往自然而然地成为核心人物，能够推动重大变革。你的领导风格偏向集中，能够在混乱中建立秩序。",
+                lesson: "学习秦始皇的开拓精神，但也要注意在追求目标时平衡各方利益。真正的伟大不仅在于开创新局，更在于让所有人都能受益于新秩序。"
+            },
+            liubang: {
+                name: "刘邦",
+                trait: "知人善任·顺势而为",
+                traits: [
+                    "善于识人用人，懂得借力使力",
+                    "灵活务实，不拘泥于形式",
+                    "能够听取不同意见并做出调整",
+                    "关键时刻果断决策",
+                    "具有极高的情商和社交能力"
+                ],
+                reason: "你展现了刘邦式的智慧——知道自己不是全才，但知道谁是真才。你善于与人相处，能够吸引人才围绕在身边。你务实不虚荣，懂得在适当的时候低头，也知道在关键时机出手。你的成功不在于个人能力有多出众，而在于整合资源的能力。",
+                leadership: "你的领导风格是典型的『甩手掌柜』型。你负责方向把握，让专业的人做专业的事。你不嫉贤妒能，反而能包容比自己更强的人。这种风格让你能够聚集大量人才，在团队中营造出尊重和信任的氛围。",
+                lesson: "学习刘邦的用人之道。真正的强者不是什么都自己来，而是让强者愿意为你效劳。保持谦逊和开放的心态，你就能从身边的人身上学到更多。"
+            },
+            tangtaizong: {
+                name: "李世民",
+                trait: "文治武功·兼听则明",
+                traits: [
+                    "追求卓越，对自己和他人都有高标准",
+                    "善于反思，能够从错误中学习",
+                    "重视人才，愿意听取不同声音",
+                    "讲究方法，谋定而后动",
+                    "兼具魄力与智慧"
+                ],
+                reason: "你身上体现出了『明君』的潜质。你既有追求完美的激情，又有脚踏实地的理性。你懂得『兼听则明，偏信则暗』的道理，愿意倾听不同的意见甚至批评。你不满足于平庸，追求在各个领域都做到最好。这种自我提升的动力和对完美的追求，与开创『贞观之治』的李世民高度相似。",
+                leadership: "你是一位学习型的领导者。你注重自我反思和总结，不断优化自己的决策方式。你善于权衡利弊，在感性和理性之间找到平衡点。你的领导风格是『以身作则』——对自己严格，对下属也期望严格，但同时给予足够的支持和信任。",
+                lesson: "学习李世民的虚怀若谷和持续精进。真正的伟大不是一蹴而就，而是永不停歇的自我超越。保持开放的心态，让批评成为进步的阶梯。"
+            },
+            hongwu: {
+                name: "朱元璋",
+                trait: "草根逆袭·铁腕治国",
+                traits: [
+                    "吃苦耐劳，从基层一步步崛起",
+                    "意志坚定，不轻易被困难击倒",
+                    "对不公现象零容忍",
+                    "勤俭节约，反对奢侈",
+                    "重视实际成效而非形式"
+                ],
+                reason: "你展现了朱元璋式的草根精神——从底层崛起，靠自己改变命运。你对弱势群体有同情心，对剥削者有天然的厌恶。你不迷信权威，敢于挑战既定的规则。你的身上有一种坚韧不拔的力量，即使身处逆境也不会放弃。这种从苦难中走出来的坚强和对公平正义的追求，是朱元璋最典型的特征。",
+                leadership: "你的领导风格是『务实铁腕』型。你不搞花架子，注重实际效果。你对效率有极高要求，不能容忍拖延和敷衍。你愿意亲力亲为，从细节把控质量。在你手下工作需要有真才实学，形式主义在你这里行不通。",
+                lesson: "学习朱元璋的坚韧和务实，但也要注意不要过于严苛。人性化管理与严格要求并不矛盾，有时宽容反而能带来更大的凝聚力。"
+            },
+            kangxi: {
+                name: "康熙",
+                trait: "勤学深思·包容并蓄",
+                traits: [
+                    "求知欲强，持续学习不断进步",
+                    "善于处理复杂的人际关系",
+                    "具有极强的耐心和长远眼光",
+                    "包容不同文化和观点",
+                    "注重平衡与调和"
+                ],
+                reason: "你展现出了康熙皇帝式的智慧——学识渊博却又谦虚谨慎。你对世界充满好奇，喜欢探索未知的领域。你能够欣赏和接纳不同的文化和观点，不封闭也不盲从。你在处理问题时展现出了超越同龄人的成熟和老练，懂得平衡各方利益。你的这些特质与在位61年、开创康乾盛世的康熙皇帝非常相似。",
+                leadership: "你是一位睿智的平衡者。你不偏激，不冲动，善于在各种势力之间找到平衡点。你注重长远利益，愿意为长期目标暂时忍耐。你善于学习和借鉴，能够吸收各方的优点。你的领导风格是『以柔克刚』，用智慧而非强力来解决问题。",
+                lesson: "学习康熙的终身学习态度和包容精神。真正的智者知道自己不知道什么，并且永远保持谦虚和好奇。同时，也要勇于在关键时刻做出决断。"
+            },
+            wuzetian: {
+                name: "武则天",
+                trait: "打破常规·女性力量",
+                traits: [
+                    "不惧怕打破常规和既有的规则",
+                    "意志坚强，不被传统观念束缚",
+                    "善于把握时机，创造机会",
+                    "重视实际能力而非出身",
+                    "有魄力承担巨大压力"
+                ],
+                reason: "你身上有一种突破限制的力量——不愿被传统和规则束缚，勇于走自己的路。你不随波逐流，有自己独立的判断。你敢于在关键时刻挺身而出，承担别人不敢承担的责任。你的内心有一种不服输的劲头，即使面对再大的压力也不会轻易屈服。这种打破常规的勇气和女性特有的坚韧，与中国历史上唯一的女皇帝武则天高度契合。",
+                leadership: "你的领导风格是『破局者』型。你不满足于按部就班，喜欢寻找新的可能性和机会。你敢于挑战权威，在别人犹豫不前时已经迈出了第一步。你重用人才不看背景只看能力，能够打破常规选用贤能。在你手下，最有能力的人才能真正脱颖而出。",
+                lesson: "学习武则天的勇气和魄力，但也要注意方式方法。真正的突破需要智慧而非蛮力，找到合适的时机和方式，你的路会走得更远。"
+            },
+            qianlong: {
+                name: "乾隆",
+                trait: "文治武功·艺术情怀",
+                traits: [
+                    "欣赏美，有较高的艺术修养",
+                    "注重生活品质，懂得享受生活",
+                    "自信但不自负，有骄傲的资本",
+                    "喜欢收藏和整理，有整理癖",
+                    "追求完美，对品质有要求"
+                ],
+                reason: "你展现出了乾隆皇帝式的品味和格调——既有气吞山河的魄力，又有精致细腻的情趣。你不只是一个硬核的工作狂，也懂得欣赏生活中的美好事物。你对自己和生活都有较高的要求，不满足于『差不多就行』。你有着广泛的好奇心，涉猎多个领域。你的这些特质与精通诗词书画、收藏天下奇珍的乾隆皇帝非常相似。",
+                leadership: "你的领导风格是『品味型』型。你不只追求结果，也注重过程中的品质。你善于发现美和创意，能够欣赏下属的才华。你希望把事情做到极致，对平庸之作无法忍受。在你的团队中，美感和品质是重要的标准。",
+                lesson: "学习乾隆的品味和修养，但也要警惕过于追求完美而错失时机。懂得在适当的时候收手，欣赏已经拥有的，比永远追逐更好的更需要智慧。"
+            },
+            caocao: {
+                name: "曹操",
+                trait: "乱世枭雄·率真复杂",
+                traits: [
+                    "复杂立体，不单一化地看问题",
+                    "重视才能，识英雄重英雄",
+                    "直率真实，不喜欢虚伪做作",
+                    "适应力强，能屈能伸",
+                    "有理想但也懂现实"
+                ],
+                reason: "你是一个复杂而立体的人——不是非黑即白的简单判断。你欣赏真实而非虚伪，即使真实有时候不那么完美。你能够理解人性的复杂，不会简单地给人贴标签。你有自己的理想和追求，但也不天真地以为单凭理想就能成功。你的这些特质与历史上最具争议也最有魅力的曹操高度相似。",
+                leadership: "你的领导风格是『枭雄型』型。你能够吸引有才能的人，因为你真正欣赏和重用人才。你不拘小节，能够容忍性格上的缺陷只要能力过硬。你在决策时冷静务实，不被感情左右。你的团队往往汇聚了各种性格鲜明的人才。",
+                lesson: "学习曹操的务实和率真，但也要警惕过于现实而失去理想。保持内心的复杂和立体不被磨灭，在这个世界上，做真实的自己比做完美的自己更难也更有价值。"
+                ]
+            }
+        };
+
+        // Questions - 30 questions with 4 options each
+        const questions = [
+            {
+                question: "你在工作中的首选处理方式是什么？",
+                options: [
+                    { text: "制定详细计划，按步骤严格执行", type: "qinshihuang" },
+                    { text: "组建团队，让专业的人做专业的事", type: "liubang" },
+                    { text: "先分析问题，找到最优解再行动", type: "tangtaizong" },
+                    { text: "随机应变，在实践中调整方向", type: "caocao" }
+                ]
+            },
+            {
+                question: "当你的意见与大多数人相左时，你会？",
+                options: [
+                    { text: "坚持自己的判断，即使被孤立也不妥协", type: "qinshihuang" },
+                    { text: "倾听多数意见，但保留自己的看法", type: "kangxi" },
+                    { text: "尝试说服他们，用逻辑和事实证明自己", type: "tangtaizong" },
+                    { text: "先跟随主流，关键时刻再表明立场", type: "liubang" }
+                ]
+            },
+            {
+                question: "你如何看待权力？",
+                options: [
+                    { text: "权力是实现目标的必要工具，应该集中", type: "qinshihuang" },
+                    { text: "权力意味着责任，使用权力要谨慎", type: "kangxi" },
+                    { text: "权力需要制衡，否则必然导致腐败", type: "tangtaizong" },
+                    { text: "权力是中性的，关键看谁在使用", type: "caocao" }
+                ]
+            },
+            {
+                question: "你的朋友通常如何评价你？",
+                options: [
+                    { text: "有魄力，有主见，敢于担当", type: "qinshihuang" },
+                    { text: "随和，好相处，善于倾听", type: "liubang" },
+                    { text: "聪明，理性，看问题深刻", type: "tangtaizong" },
+                    { text: "有魅力，真实，不做作", type: "caocao" }
+                ]
+            },
+            {
+                question: "面对一个强大的对手，你会？",
+                options: [
+                    { text: "正面迎战，用实力说话", type: "qinshihuang" },
+                    { text: "联合其他力量，形成优势", type: "liubang" },
+                    { text: "分析对手弱点，寻找突破口", type: "tangtaizong" },
+                    { text: "时而进攻时而防守，灵活应对", type: "caocao" }
+                ]
+            },
+            {
+                question: "你对金钱的态度是？",
+                options: [
+                    { text: "金钱是实现目标的资源，该花则花", type: "qinshihuang" },
+                    { text: "量入为出，保持务实", type: "hongwu" },
+                    { text: "金钱是身外之物，不必过于执着", type: "kangxi" },
+                    { text: "金钱是工具，也是衡量成功的标准", type: "qianlong" }
+                ]
+            },
+            {
+                question: "你更倾向于哪种生活方式？",
+                options: [
+                    { text: "不断进取，追求更高的成就", type: "qinshihuang" },
+                    { text: "与人为善，享受生活的温暖", type: "liubang" },
+                    { text: "内外兼修，注重精神成长", type: "kangxi" },
+                    { text: "率性而为，不委屈自己", type: "caocao" }
+                ]
+            },
+            {
+                question: "在团队中，你通常扮演什么角色？",
+                options: [
+                    { text: "决策者，负责指明方向", type: "qinshihuang" },
+                    { text: "协调者，平衡各方利益", type: "liubang" },
+                    { text: "智囊，提供创意和方案", type: "tangtaizong" },
+                    { text: "开拓者，勇挑重担冲在前", type: "wuzetian" }
+                ]
+            },
+            {
+                question: "你如何看待传统和规则？",
+                options: [
+                    { text: "规则是必要的，但需要与时俱进", type: "tangtaizong" },
+                    { text: "传统有其价值，不应轻易打破", type: "kangxi" },
+                    { text: "规则是强者制定的，可以挑战", type: "wuzetian" },
+                    { text: "规则是为了服务人，不是束缚人", type: "liubang" }
+                ]
+            },
+            {
+                question: "当你犯了错误时，你会？",
+                options: [
+                    { text: "承认错误，但更关注如何改正", type: "tangtaizong" },
+                    { text: "迅速弥补，尽量减少损失", type: "liubang" },
+                    { text: "反思原因，防止重蹈覆辙", type: "kangxi" },
+                    { text: "承认，但不会让错误定义自己", type: "caocao" }
+                ]
+            },
+            {
+                question: "你更欣赏什么样的人才？",
+                options: [
+                    { text: "执行力强，能够把事情做成", type: "qinshihuang" },
+                    { text: "忠诚可靠，值得信任", type: "liubang" },
+                    { text: "才华出众，能够独当一面", type: "caocao" },
+                    { text: "德才兼备，全面发展", type: "kangxi" }
+                ]
+            },
+            {
+                question: "你的审美趣味偏向？",
+                options: [
+                    { text: "大气磅礴，有震撼力", type: "qinshihuang" },
+                    { text: "精致典雅，有品位", type: "qianlong" },
+                    { text: "简约实用，不浮夸", type: "hongwu" },
+                    { text: "多元融合，不拘一格", type: "kangxi" }
+                ]
+            },
+            {
+                question: "面对巨大的压力时，你会？",
+                options: [
+                    { text: "顶住压力，坚持到底", type: "qinshihuang" },
+                    { text: "调整心态，灵活应对", type: "liubang" },
+                    { text: "寻找根源，系统性解决", type: "tangtaizong" },
+                    { text: "接受现实，在困境中找机会", type: "caocao" }
+                ]
+            },
+            {
+                question: "你如何看待冒险？",
+                options: [
+                    { text: "风险与机遇并存，敢于冒险才能成功", type: "qinshihuang" },
+                    { text: "谨慎评估，但不失进取心", type: "tangtaizong" },
+                    { text: "谋定而后动，尽量降低风险", type: "kangxi" },
+                    { text: "有时候需要赌一把，看准时机", type: "caocao" }
+                ]
+            },
+            {
+                question: "你最重视的价值观是？",
+                options: [
+                    { text: "成就——做出一番伟大事业", type: "qinshihuang" },
+                    { text: "仁义——对得起身边的人", type: "liubang" },
+                    { text: "智慧——不断成长和进步", type: "kangxi" },
+                    { text: "真实——做真正的自己", type: "caocao" }
+                ]
+            },
+            {
+                question: "在与他人发生冲突时，你通常会？",
+                options: [
+                    { text: "坚持立场，不会轻易退让", type: "qinshihuang" },
+                    { text: "寻求和解，避免两败俱伤", type: "liubang" },
+                    { text: "分析利弊，找到双赢方案", type: "tangtaizong" },
+                    { text: "看情况，时而强硬时而妥协", type: "caocao" }
+                ]
+            },
+            {
+                question: "你闲暇时最喜欢做什么？",
+                options: [
+                    { text: "阅读学习，提升自己", type: "kangxi" },
+                    { text: "收藏欣赏，研究艺术品", type: "qianlong" },
+                    { text: "与朋友交流，拓展人脉", type: "liubang" },
+                    { text: "独立思考，规划未来", type: "qinshihuang" }
+                ]
+            },
+            {
+                question: "你认为自己最大的优点是？",
+                options: [
+                    { text: "有魄力，敢想敢做", type: "qinshihuang" },
+                    { text: "情商高，人际关系好", type: "liubang" },
+                    { text: "头脑聪明，学习能力强", type: "tangtaizong" },
+                    { text: "真实，不虚伪", type: "caocao" }
+                ]
+            },
+            {
+                question: "你如何面对失败？",
+                options: [
+                    { text: "从哪里跌倒就从哪里爬起来", type: "hongwu" },
+                    { text: "总结教训，继续前行", type: "tangtaizong" },
+                    { text: "调整策略，重新来过", type: "liubang" },
+                    { text: "接受它，失败是人生的一部分", type: "caocao" }
+                ]
+            },
+            {
+                question: "你对未来的态度是？",
+                options: [
+                    { text: "充满信心，相信自己能够成功", type: "qinshihuang" },
+                    { text: "谨慎乐观，做好准备", type: "kangxi" },
+                    { text: "活在当下，不必想太远", type: "liubang" },
+                    { text: "充满可能，命运掌握在自己手中", type: "wuzetian" }
+                ]
+            },
+            {
+                question: "你更倾向于怎样的处世哲学？",
+                options: [
+                    { text: "胜者为王，败者为寇", type: "qinshihuang" },
+                    { text: "退一步海阔天空", type: "liubang" },
+                    { text: "知己知彼，百战不殆", type: "tangtaizong" },
+                    { text: "宁我负人，休人负我", type: "caocao" }
+                ]
+            },
+            {
+                question: "当有机会获得巨大成功时，你会？",
+                options: [
+                    { text: "全力以赴，不留遗憾", type: "qinshihuang" },
+                    { text: "权衡风险，谨慎行动", type: "tangtaizong" },
+                    { text: "先听听别人的意见", type: "liubang" },
+                    { text: "抓住机会，即使有风险", type: "caocao" }
+                ]
+            },
+            {
+                question: "你如何看待出身和背景？",
+                options: [
+                    { text: "英雄不问出处，关键看能力", type: "hongwu" },
+                    { text: "出身会影响起点，但决定不了终点", type: "wuzetian" },
+                    { text: "良好的出身有助于成功", type: "qianlong" },
+                    { text: "出身不重要，重要的是选择", type: "liubang" }
+                ]
+            },
+            {
+                question: "你更看重一个人的什么品质？",
+                options: [
+                    { text: "能力和魄力", type: "caocao" },
+                    { text: "忠诚和品德", type: "liubang" },
+                    { text: "才华和学识", type: "kangxi" },
+                    { text: "坚韧和意志", type: "hongwu" }
+                ]
+            },
+            {
+                question: "面对不公时，你会？",
+                options: [
+                    { text: "站出来反抗，即使力量悬殊", type: "wuzetian" },
+                    { text: "寻求合法途径解决", type: "tangtaizong" },
+                    { text: "隐忍等待时机", type: "kangxi" },
+                    { text: "先保护好自己，再图发展", type: "liubang" }
+                ]
+            },
+            {
+                question: "你欣赏什么样的领导？",
+                options: [
+                    { text: "强势果断，能够带领大家前进", type: "qinshihuang" },
+                    { text: "民主开放，愿意听取意见", type: "tangtaizong" },
+                    { text: "仁厚宽容，让人感到温暖", type: "liubang" },
+                    { text: "智慧通达，能看清大势", type: "kangxi" }
+                ]
+            },
+            {
+                question: "你认为人生最重要的是？",
+                options: [
+                    { text: "建功立业，名垂青史", type: "qinshihuang" },
+                    { text: "家庭幸福，内心平静", type: "liubang" },
+                    { text: "不断成长，自我超越", type: "kangxi" },
+                    { text: "活得真实，不留遗憾", type: "wuzetian" }
+                ]
+            },
+            {
+                question: "当你需要做决定时，你更依赖？",
+                options: [
+                    { text: "直觉和魄力", type: "qinshihuang" },
+                    { text: "数据和逻辑分析", type: "tangtaizong" },
+                    { text: "他人的建议和经验", type: "liubang" },
+                    { text: "当时的具体情况", type: "caocao" }
+                ]
+            },
+            {
+                question: "你希望给后人留下什么印象？",
+                options: [
+                    { text: "一个开创者，一个改变世界的人", type: "qinshihuang" },
+                    { text: "一个好人，一个值得尊敬的人", type: "liubang" },
+                    { text: "一个智者，一个启发后人的人", type: "kangxi" },
+                    { text: "一个真实的人，一个不走寻常路的人", type: "wuzetian" }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let scores = {
+            qinshihuang: 0,
+            liubang: 0,
+            tangtaizong: 0,
+            hongwu: 0,
+            kangxi: 0,
+            wuzetian: 0,
+            qianlong: 0,
+            caocao: 0
+        };
+
+        function startTest() {
+            document.getElementById('welcomePage').style.display = 'none';
+            document.getElementById('questionPage').style.display = 'block';
+            currentQuestion = 0;
+            scores = {
+                qinshihuang: 0, liubang: 0, tangtaizong: 0, hongwu: 0,
+                kangxi: 0, wuzetian: 0, qianlong: 0, caocao: 0
+            };
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('currentQ').textContent = currentQuestion + 1;
+            document.getElementById('questionNumber').textContent = `第 ${currentQuestion + 1} / 30 题`;
+            document.getElementById('questionText').textContent = q.question;
+
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            const optionsHtml = ['A', 'B', 'C', 'D'].map((letter, index) => `
+                <div class="option" onclick="selectOption('${q.options[index].type}')">
+                    <span class="option-letter">${letter}</span>
+                    <span class="option-text">${q.options[index].text}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('options').innerHTML = optionsHtml;
+        }
+
+        function selectOption(type) {
+            scores[type]++;
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('questionPage').style.display = 'none';
+            document.getElementById('resultPage').style.display = 'block';
+
+            // Find the max score
+            let maxScore = 0;
+            let maxEmperor = 'qinshihuang';
+            for (const emperor in scores) {
+                if (scores[emperor] > maxScore) {
+                    maxScore = scores[emperor];
+                    maxEmperor = emperor;
+                }
+            }
+
+            const data = emperors[maxEmperor];
+            const totalScore = questions.length;
+            const matchPercent = Math.round((maxScore / totalScore) * 100);
+
+            document.getElementById('emperorName').textContent = data.name;
+            document.getElementById('matchPercent').textContent = `匹配度：${matchPercent}%`;
+
+            const traitsHtml = data.traits.map(trait => `<li>${trait}</li>`).join('');
+            document.getElementById('traits').innerHTML = traitsHtml;
+            document.getElementById('reason').textContent = data.reason;
+            document.getElementById('leadership').textContent = data.leadership;
+            document.getElementById('lesson').textContent = data.lesson;
+        }
+
+        function restartTest() {
+            document.getElementById('resultPage').style.display = 'none';
+            document.getElementById('welcomePage').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
